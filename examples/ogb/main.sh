@@ -2,6 +2,8 @@
     set -e
     source shell_scripts_configs/PCQM4M-LSC.sh
     mkdir -p $default_root_dir
+    echo "$pretrain_checkpoint_dir"
+    exit 1
     python ../../graphormer/entry.py \
     --num_workers 8 \
     --seed $seed \
@@ -21,8 +23,8 @@
     --flag_m $flag_m \
     --flag_step_size $flag_step_size \
     --flag_mag $flag_mag \
-    --checkpoint_path $ckpt_path
-     
+    --checkpoint_path "$pretrain_checkpoint_dir"
+
     exit 0;
 }
 

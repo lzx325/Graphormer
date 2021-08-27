@@ -27,5 +27,5 @@ warmup_updates=$((tot_updates/10))
 max_epochs=$((epoch+1))
 
 default_root_dir="../../exps/PCQM4M-LSC/$exp_name/$seed"
-pretrain_checkpoint_dir=""
+pretrain_checkpoint_dir="<pretrain_checkpoint_dir>"
 checkpoint_dir="$default_root_dir/lightning_logs/checkpoints"

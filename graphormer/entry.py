@@ -39,7 +39,7 @@ def cli_main():
     # ------------
     # model
     # ------------
-    if args.checkpoint_path != '':
+    if os.path.exists(args.checkpoint_path):
         model = Graphormer.load_from_checkpoint(
             args.checkpoint_path,
             strict=False,
@@ -63,6 +63,7 @@ def cli_main():
             flag_step_size=args.flag_step_size,
         )
     else:
+        print("checkpoint_path does not exist, training from scratch")
         model = Graphormer(
             n_layers=args.n_layers,
             num_heads=args.num_heads,
