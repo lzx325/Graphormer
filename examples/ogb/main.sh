@@ -1,6 +1,11 @@
 {
     set -e
+    source "/sw/csi/anaconda3/4.4.0/binary/anaconda3/etc/profile.d/conda.sh"
     source shell_scripts_configs/PCQM4M-LSC.sh
+    module purge
+    module load cuda/11.2.2
+    conda deactivate
+    conda activate graphormer
     mkdir -p $default_root_dir
     python ../../graphormer/entry.py \
     --num_workers 8 \
