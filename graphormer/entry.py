@@ -2,13 +2,18 @@
 # Licensed under the MIT License.
 
 from model import Graphormer
+
 from data import GraphDataModule, get_dataset
+
+
 
 from argparse import ArgumentParser
 from pprint import pprint
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks import ModelCheckpoint, LearningRateMonitor
 import os
+
+
 
 
 def cli_main():
@@ -29,6 +34,7 @@ def cli_main():
     # data
     # ------------
     dm = GraphDataModule.from_argparse_args(args)
+    print(len(dm.dataset))
 
     # ------------
     # model

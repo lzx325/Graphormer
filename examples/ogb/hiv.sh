@@ -1,12 +1,13 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 #!/usr/bin/env bash
-
+{
+set -e
 [ -z "${exp_name}" ] && exp_name="hiv_flag"
 [ -z "${seed}" ] && seed="1"
 [ -z "${arch}" ] && arch="--ffn_dim 768 --hidden_dim 768 --intput_dropout_rate 0.0 --attention_dropout_rate 0.1 --dropout_rate 0.1 --weight_decay 0.0 --n_layers 12 --edge_type multi_hop --multi_hop_max_dist 5"
 [ -z "${batch_size}" ] && batch_size="128"         # Alternatively, you can decrease the bsz to 64 and use 2 GPUs, if you do not have 32G GPU memory.
-[ -z "${epoch}" ] && epoch="8"
+[ -z "${epoch}" ] && epoch="500"
 [ -z "${peak_lr}" ] && peak_lr="2e-4"
 [ -z "${end_lr}" ] && end_lr="1e-9"
 
@@ -50,10 +51,10 @@ python ../../graphormer/entry.py --num_workers 8 --seed $seed --batch_size $batc
       --gpus $n_gpu --accelerator ddp --precision 16 $arch \
       --default_root_dir $default_root_dir \
       --tot_updates $tot_updates --warmup_updates $warmup_updates --max_epochs $max_epochs \
-      --checkpoint_path $ckpt_path \
       --peak_lr $peak_lr --end_lr $end_lr --progress_bar_refresh_rate 10 \
       --flag --flag_m $flag_m --flag_step_size $flag_step_size --flag_mag $flag_mag
 
+      # --checkpoint_path $ckpt_path \
 
 # validate and test on every checkpoint
 checkpoint_dir=$default_root_dir/lightning_logs/checkpoints/
@@ -76,3 +77,6 @@ do
             --checkpoint_path $file --test --progress_bar_refresh_rate 100
 done
 echo "==============================================================================="
+exit 0;
+}
+
