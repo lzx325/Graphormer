@@ -107,7 +107,7 @@ def cli_main():
     trainer = pl.Trainer.from_argparse_args(args)
     trainer.callbacks.append(checkpoint_callback)
     trainer.callbacks.append(LearningRateMonitor(logging_interval='step'))
-
+    dm.setup()
     if args.test:
         result = trainer.test(model, datamodule=dm)
         pprint(result)
@@ -116,6 +116,7 @@ def cli_main():
         pprint(result)
     else:
         trainer.fit(model, datamodule=dm)
+
 
 
 if __name__ == '__main__':

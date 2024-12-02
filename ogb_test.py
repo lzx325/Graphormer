@@ -12,8 +12,6 @@ if __name__=="__main__":
 
     # Download and process data at './dataset/ogbg_molhiv/'
     dataset = PygGraphPropPredDataset(name = 'ogbg-molpcba')
-    dataset2 = PygPCQM4MDataset(root='./dataset')
-    atom_emb = atom_encoder(dataset[0].x) # x is input atom feature
-    edge_emb = bond_encoder(dataset[0].edge_attr) # edge_attr is input edge feature
-    import ipdb; ipdb.set_trace()
+    # dataset2 = PygPCQM4MDataset(root='./dataset')
+    print(dataset[0])
     

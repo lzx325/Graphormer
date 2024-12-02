@@ -1,0 +1,68 @@
+Loading module for CUDA 11.2.2
+CUDA 11.2.2 is now loaded
+Global seed set to 1
+GPU available: True, used: True
+TPU available: False, using: 0 TPU cores
+Using native 16bit precision.
+Global seed set to 1
+initializing ddp: GLOBAL_RANK: 0, MEMBER: 1/4
+Global seed set to 1
+GPU available: True, used: True
+TPU available: False, using: 0 TPU cores
+Using native 16bit precision.
+Global seed set to 1
+initializing ddp: GLOBAL_RANK: 1, MEMBER: 2/4
+Global seed set to 1
+GPU available: True, used: True
+TPU available: False, using: 0 TPU cores
+Using native 16bit precision.
+Global seed set to 1
+initializing ddp: GLOBAL_RANK: 2, MEMBER: 3/4
+Global seed set to 1
+GPU available: True, used: True
+TPU available: False, using: 0 TPU cores
+Using native 16bit precision.
+Global seed set to 1
+initializing ddp: GLOBAL_RANK: 3, MEMBER: 4/4
+LOCAL_RANK: 2 - CUDA_VISIBLE_DEVICES: [0,1,2,3]
+LOCAL_RANK: 1 - CUDA_VISIBLE_DEVICES: [0,1,2,3]
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0,1,2,3]
+LOCAL_RANK: 3 - CUDA_VISIBLE_DEVICES: [0,1,2,3]
+Set SLURM handle signals.
+Set SLURM handle signals.
+/home/liz0f/.conda/envs/graphormer/lib/python3.7/site-packages/pytorch_lightning/utilities/distributed.py:69: RuntimeWarning: The lr scheduler dict contains the key(s) ['interval', 'frequency'], but the keys will be ignored. You need to call `lr_scheduler.step()` manually in manual optimization.
+  warnings.warn(*args, **kwargs)
+Set SLURM handle signals.
+Set SLURM handle signals.
+
+   | Name                         | Type       | Params
+-------------------------------------------------------------
+0  | atom_encoder                 | Embedding  | 2.4 M 
+1  | edge_encoder                 | Embedding  | 49.2 K
+2  | edge_dis_encoder             | Embedding  | 131 K 
+3  | spatial_pos_encoder          | Embedding  | 16.4 K
+4  | in_degree_encoder            | Embedding  | 262 K 
+5  | out_degree_encoder           | Embedding  | 262 K 
+6  | input_dropout                | Dropout    | 0     
+7  | layers                       | ModuleList | 9.5 M 
+8  | final_ln                     | LayerNorm  | 1.0 K 
+9  | downstream_out_proj          | Linear     | 513   
+10 | graph_token                  | Embedding  | 512   
+11 | graph_token_virtual_distance | Embedding  | 32    
+-------------------------------------------------------------
+12.6 M    Trainable params
+0         Non-trainable params
+12.6 M    Total params
+50.203    Total estimated model params size (MB)
+Global seed set to 1
+Global seed set to 1
+Global seed set to 1
+Global seed set to 1
+/home/liz0f/.conda/envs/graphormer/lib/python3.7/site-packages/torch/optim/lr_scheduler.py:136: UserWarning: Detected call of `lr_scheduler.step()` before `optimizer.step()`. In PyTorch 1.1.0 and later, you should call them in the opposite order: `optimizer.step()` before `lr_scheduler.step()`.  Failure to do this will result in PyTorch skipping the first value of the learning rate schedule. See more details at https://pytorch.org/docs/stable/optim.html#how-to-adjust-learning-rate
+  "https://pytorch.org/docs/stable/optim.html#how-to-adjust-learning-rate", UserWarning)
+/home/liz0f/.conda/envs/graphormer/lib/python3.7/site-packages/torch/optim/lr_scheduler.py:136: UserWarning: Detected call of `lr_scheduler.step()` before `optimizer.step()`. In PyTorch 1.1.0 and later, you should call them in the opposite order: `optimizer.step()` before `lr_scheduler.step()`.  Failure to do this will result in PyTorch skipping the first value of the learning rate schedule. See more details at https://pytorch.org/docs/stable/optim.html#how-to-adjust-learning-rate
+  "https://pytorch.org/docs/stable/optim.html#how-to-adjust-learning-rate", UserWarning)
+/home/liz0f/.conda/envs/graphormer/lib/python3.7/site-packages/torch/optim/lr_scheduler.py:136: UserWarning: Detected call of `lr_scheduler.step()` before `optimizer.step()`. In PyTorch 1.1.0 and later, you should call them in the opposite order: `optimizer.step()` before `lr_scheduler.step()`.  Failure to do this will result in PyTorch skipping the first value of the learning rate schedule. See more details at https://pytorch.org/docs/stable/optim.html#how-to-adjust-learning-rate
+  "https://pytorch.org/docs/stable/optim.html#how-to-adjust-learning-rate", UserWarning)
+/home/liz0f/.conda/envs/graphormer/lib/python3.7/site-packages/torch/optim/lr_scheduler.py:136: UserWarning: Detected call of `lr_scheduler.step()` before `optimizer.step()`. In PyTorch 1.1.0 and later, you should call them in the opposite order: `optimizer.step()` before `lr_scheduler.step()`.  Failure to do this will result in PyTorch skipping the first value of the learning rate schedule. See more details at https://pytorch.org/docs/stable/optim.html#how-to-adjust-learning-rate
+  "https://pytorch.org/docs/stable/optim.html#how-to-adjust-learning-rate", UserWarning)

@@ -1,5 +1,9 @@
+# distutils: extra_compile_args = -fopenmp
+# distutils: extra_link_args = -fopenmp
+
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
+
 
 import cython
 from cython.parallel cimport prange, parallel
@@ -16,7 +20,6 @@ def floyd_warshall(adjacency_matrix):
     assert adj_mat_copy.flags['C_CONTIGUOUS']
     cdef numpy.ndarray[long, ndim=2, mode='c'] M = adj_mat_copy
     cdef numpy.ndarray[long, ndim=2, mode='c'] path = numpy.zeros([n, n], dtype=numpy.int64)
-
     cdef unsigned int i, j, k
     cdef long M_ij, M_ik, cost_ikkj
     cdef long* M_ptr = &M[0,0]

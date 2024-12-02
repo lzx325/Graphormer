@@ -111,21 +111,30 @@ class Graphormer(pl.LightningModule):
         self.apply(lambda module: init_params(module, n_layers=n_layers))
 
     def forward(self, batched_data, perturb=None):
+        # lizx: 
+        # attn_bias: (batch_size, n_nodes+1, n_nodes+1), this is padding mask, including the virtual node
+        # spatial_pos: (batch_size, n_nodes, n_nodes) spatial encoding (shortest-path)
+        # x: (batch_size, n_nodes, node_feat_dim) node features 
+        # in_degree, out_degree: (batch_size, n_nodes), degree centrality encoding
+        # edge_input: (batch_size, n_nodes, n_nodes, max_path_length, edge_feat_dim), records edge features along the path, this is for edge encoding
+        # attn_edge_type: (batch_size, n_nodes, n_nodes, edge_feat_dim), records edge features for each edge
         attn_bias, spatial_pos, x = batched_data.attn_bias, batched_data.spatial_pos, batched_data.x
         in_degree, out_degree = batched_data.in_degree, batched_data.in_degree
         edge_input, attn_edge_type = batched_data.edge_input, batched_data.attn_edge_type
         # graph_attn_bias
         n_graph, n_node = x.size()[:2]
+        import ipdb; ipdb.set_trace()
         graph_attn_bias = attn_bias.clone()
         graph_attn_bias = graph_attn_bias.unsqueeze(1).repeat(
             1, self.num_heads, 1, 1)  # [n_graph, n_head, n_node+1, n_node+1]
 
-        # spatial pos
+        # lizx: add spatial encoding to padding mask
         # [n_graph, n_node, n_node, n_head] -> [n_graph, n_head, n_node, n_node]
         spatial_pos_bias = self.spatial_pos_encoder(spatial_pos).permute(0, 3, 1, 2)
         graph_attn_bias[:, :, 1:, 1:] = graph_attn_bias[:,
                                                         :, 1:, 1:] + spatial_pos_bias
         # reset spatial pos here
+        # lizx: this is for virtual node
         t = self.graph_token_virtual_distance.weight.view(1, self.num_heads, 1)
         graph_attn_bias[:, :, 1:, 0] = graph_attn_bias[:, :, 1:, 0] + t
         graph_attn_bias[:, :, 0, :] = graph_attn_bias[:, :, 0, :] + t
@@ -151,30 +160,48 @@ class Graphormer(pl.LightningModule):
             edge_input = (edge_input.sum(-2) /
                           (spatial_pos_.float().unsqueeze(-1))).permute(0, 3, 1, 2)
         else:
+            # lizx: this branch does not consider the features of the edges along the path between two nodes
             # [n_graph, n_node, n_node, n_head] -> [n_graph, n_head, n_node, n_node]
             edge_input = self.edge_encoder(
                 attn_edge_type).mean(-2).permute(0, 3, 1, 2)
 
-        graph_attn_bias[:, :, 1:, 1:] = graph_attn_bias[:,
-                                                        :, 1:, 1:] + edge_input
+        graph_attn_bias[:, :, 1:, 1:] = graph_attn_bias[:,:, 1:, 1:] + edge_input
         graph_attn_bias = graph_attn_bias + attn_bias.unsqueeze(1)  # reset
 
         # node feauture + graph token
+        # lizx: 
+        # x: (batch_size, n_nodes, node_feat_dim)
+        # self.atom_encoder(x): (batch_size, n_nodes, node_feat_dim, node_feat_emb_dim)
+        # node_feature: (batch_size, n_nodes, node_feat_emb_dim)
+
         node_feature = self.atom_encoder(x).sum(
             dim=-2)           # [n_graph, n_node, n_hidden]
+
         if self.flag and perturb is not None:
             node_feature += perturb
 
+        # lizx: add degree centrality encoding
+        # node_feature: (batch_size, n_nodes, node_feat_emb_dim)
         node_feature = node_feature + \
             self.in_degree_encoder(in_degree) + \
             self.out_degree_encoder(out_degree)
+        # lizx: 
+        # self.graph_token.weight: (1,hidden_dim)
+        # graph_token_feature: (batch_size, 1, hidden_dim)
         graph_token_feature = self.graph_token.weight.unsqueeze(
             0).repeat(n_graph, 1, 1)
+        # graph_token_feature: (batch_size, 1+n_nodes, hidden_dim)
         graph_node_feature = torch.cat(
             [graph_token_feature, node_feature], dim=1)
 
-        # transfomrer encoder
+        # transformer encoder
+        # lizx:
+        # output: (batch_size, 1+n_nodes, hidden_dim)
+        # graph_attn_bias: (batch_size, n_heads, 1+n_nodes, 1+n_nodes)
+        
         output = self.input_dropout(graph_node_feature)
+
+
         for enc_layer in self.layers:
             output = enc_layer(output, graph_attn_bias)
         output = self.final_ln(output)
@@ -281,7 +308,6 @@ class Graphormer(pl.LightningModule):
             idx = torch.cat([i['idx'] for i in outputs])
             torch.save(result, 'y_pred.pt')
             torch.save(idx, 'idx.pt')
-            exit(0)
         input_dict = {"y_true": y_true, "y_pred": y_pred}
         self.log('test_' + self.metric, self.evaluator.eval(input_dict)
                  [self.metric], sync_dist=True)

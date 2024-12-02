@@ -25,6 +25,7 @@ def convert_to_single_emb(x, offset=512):
 def preprocess_item(item):
     edge_attr, edge_index, x = item.edge_attr, item.edge_index, item.x
     N = x.size(0)
+
     x = convert_to_single_emb(x)
 
     # node adj matrix [N, N] bool
@@ -35,10 +36,10 @@ def preprocess_item(item):
     if len(edge_attr.size()) == 1:
         edge_attr = edge_attr[:, None]
     attn_edge_type = torch.zeros([N, N, edge_attr.size(-1)], dtype=torch.long)
-    attn_edge_type[edge_index[0, :], edge_index[1, :]
-                   ] = convert_to_single_emb(edge_attr) + 1
+    attn_edge_type[edge_index[0, :], edge_index[1, :]] = convert_to_single_emb(edge_attr) + 1
 
     shortest_path_result, path = algos.floyd_warshall(adj.numpy())
+
     max_dist = np.amax(shortest_path_result)
     edge_input = algos.gen_edge_input(max_dist, path, attn_edge_type.numpy())
     spatial_pos = torch.from_numpy((shortest_path_result)).long()
@@ -48,11 +49,16 @@ def preprocess_item(item):
     # combine
     item.x = x
     item.adj = adj
+
+    # lizx: this is padding mask
     item.attn_bias = attn_bias
     item.attn_edge_type = attn_edge_type
+    # lizx: section 3.1.2, spatial encoding (shortest-path)
     item.spatial_pos = spatial_pos
+    # lizx: section 3.1.1, centrality encoding
     item.in_degree = adj.long().sum(dim=1).view(-1)
     item.out_degree = adj.long().sum(dim=0).view(-1)
+    # lizx: section 3.1.3, encoding of edge along the path
     item.edge_input = torch.from_numpy(edge_input).long()
 
     return item
@@ -85,7 +91,8 @@ class MyPygPCQM4MDataset(PygPCQM4MDataset):
         if isinstance(idx, int):
             item = self.get(self.indices()[idx])
             item.idx = idx
-            return preprocess_item(item)
+            item_processed=preprocess_item(item)
+            return item_processed
         else:
             return self.index_select(idx)
 

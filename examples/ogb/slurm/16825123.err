@@ -1,0 +1,4 @@
+Loading module for CUDA 11.2.2
+CUDA 11.2.2 is now loaded
+Global seed set to 1
+slurmstepd: error: *** JOB 16825123 ON gpu211-02 CANCELLED AT 2021-08-28T02:22:15 ***
